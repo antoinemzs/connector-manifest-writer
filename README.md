@@ -64,3 +64,31 @@ This fulfills the logo manifest property.
 5. compile all manifest entries into a manifest object and output to stdin
 
 Invokers should take care to redirect all output to the desired location e.g. a file.
+
+### Compatibility requirements
+
+Components (connectors, collectors, injectors...) compatible with this scheme must:
+
+* Have a complete pyproject.toml file (can coexist with requirements.txt)
+* Parse an argument that switches off executing the component and triggers an output of the configuration schema
+
+### pyproject.toml contents
+
+To satisfy the metadata needs, a compatible pyproject.toml file should include a special tool section for this present program,
+ase per https://packaging.python.org/en/latest/specifications/pyproject-toml/#arbitrary-tool-configuration-the-tool-table.
+
+e.g.
+```toml
+[tool.connector-manifest-writer]
+title=...
+slug=...
+use_cases...
+source_code=...
+```
+
+Some metadata should come from the standard tables, e.g.
+```toml
+[project]
+description=...
+version=...
+```
