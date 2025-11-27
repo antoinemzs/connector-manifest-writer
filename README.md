@@ -14,6 +14,46 @@ Writes a XTM Composer compatible manifest for connectors leveraging PEP621 metad
 
 * Be responsible for implementing the code to output the configuration JSON Schema
 
+## Reasons for not plugging the OpenCTI connectors scripts
+
+Mostly, there are a number of assumptions regarding the internal organisation of the code
+which create frictions with using against the OpenAEV components:
+
+Expects specific files and directories which don't exist in most OpenAEV components:
+```shell
+# Search for directory name - but only connector roots
+# Look for directories with requirements.txt, src/, or __metadata__/
+find . -type d -iname "*$search_term*" 2>/dev/null \
+  | while read dir; do
+      # Check if it's likely a connector root
+      if [ -f "$dir/requirements.txt" ] || [ -d "$dir/src" ] || [ -d "$dir/__metadata__" ]; then
+        echo "$dir"
+      fi
+```
+
+Expects requirements.txt to exist and install with pip:
+```shell
+# -qq: Hides both informational and warning messages, showing only errors.
+python -m pip install -qq -r "$requirements_file"
+```
+
+Writes to a file directly instead of stdout
+```python
+with open(filepath, "w") as file:
+    connector_config_json_schema_json = json.dumps(
+        connector_config_json_schema, indent=2
+    )
+    file.write(connector_config_json_schema_json)
+
+print(f"✅ Connector config JSON schema written to {filepath}")
+```
+
+Fragile maintenance of both bash and powershell wrapper scripts along with a python script
+which does not install its own dependencies (expects them to exist globally)
+
+The locality of these scripts is also problematic as they are embedded into the
+OpenCTI connectors repository.
+
 ## Proposed architecture
 
 ### CLI
