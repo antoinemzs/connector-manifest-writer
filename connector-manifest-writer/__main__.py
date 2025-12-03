@@ -21,6 +21,10 @@ def main():
 
         tool_cmw = pyproject_contents.get("tool").get("cmw")
 
+        install_process = subprocess.run(tool_cmw.get("install-command").split(), text=True, capture_output=True, cwd=dir)
+        out = install_process.stdout
+
+
         process = subprocess.run(tool_cmw.get("config-dump-command").split(), text=True, capture_output=True, cwd=dir)
         config_schema_str = process.stdout
 
@@ -40,7 +44,7 @@ def main():
     manifest = {"id": "filigran-catalog-id", "name": "OpenCTI Connectors contracts", "description": "",
                 "version": "rolling", "contracts": contracts}
 
-    print(json.dumps(manifest))
+    print(json.dumps(manifest, indent=4))
 
 
 if __name__ == "__main__":
